@@ -1,11 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 
-import {
-  QUERY_GC_TIMES,
-  QUERY_REFETCH_SETTINGS,
-  QUERY_RETRY_COUNTS,
-  QUERY_STALE_TIMES,
-} from './query.consts';
+import { QUERY_GC_TIMES, QUERY_REFETCH_SETTINGS, QUERY_RETRY_COUNTS, QUERY_STALE_TIMES } from './query.consts';
 
 /** Создает единый QueryClient для React-части приложения. */
 function createReactQueryClient() {

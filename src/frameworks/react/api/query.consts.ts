@@ -6,9 +6,13 @@ const DEFAULT_QUERY_RETRY_COUNT = 1;
 
 export const QUERY_KEY_ROOTS = {
   api: 'api',
+  todos: 'todos',
 } as const;
 
 export const QUERY_KEY_SCOPES = {
+  all: 'all',
+  detail: 'detail',
+  list: 'list',
   root: 'root',
 } as const;
 

@@ -1,9 +1,4 @@
-import {
-  API_CONTENT_TYPES,
-  API_ERROR_MESSAGES,
-  API_HEADERS,
-  API_RESPONSE_STATUS_CODES,
-} from './api.consts';
+import { API_CONTENT_TYPES, API_ERROR_MESSAGES, API_HEADERS, API_RESPONSE_STATUS_CODES } from './api.consts';
 import type { ApiHttpMethod } from './api.consts';
 
 type ApiRequestParameters<ResponseData, RequestBody = unknown> = {

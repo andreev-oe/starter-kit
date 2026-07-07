@@ -19,15 +19,21 @@ export const API_RESPONSE_STATUS_CODES = {
 } as const;
 
 export const API_ERROR_MESSAGES = {
+  invalidResponse: 'Invalid API response',
   requestFailed: 'API request failed',
 } as const;
 
-export const API_ROUTE_ROOTS = {
-  api: '/api',
+export const API_BASE_URLS = {
+  jsonPlaceholder: 'https://jsonplaceholder.typicode.com',
 } as const;
 
 export const API_ROUTE_SEGMENTS = {
-  root: '',
+  todos: 'todos',
+} as const;
+
+export const API_QUERY_PARAMETER_NAMES = {
+  limit: '_limit',
+  page: '_page',
 } as const;
 
 export type ApiHttpMethod = (typeof API_HTTP_METHODS)[keyof typeof API_HTTP_METHODS];
