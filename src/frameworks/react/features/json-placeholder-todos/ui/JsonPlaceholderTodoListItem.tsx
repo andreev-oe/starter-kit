@@ -47,12 +47,12 @@ const JsonPlaceholderTodoListItemContent = styled(Stack)(() => {
   return {
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%'
+    width: '100%',
   };
 });
 
 const FixedWidthChip = styled(Chip)(() => {
   return {
-    minWidth: '80px'
+    minWidth: '80px',
   };
 });

@@ -43,9 +43,7 @@ export default function ReactHomePage() {
       <ReactHomeTabsContainer>
         <Tabs value={activeRoutePath} onChange={handleRouteTabChange}>
           {REACT_HOME_PAGE_TABS.map((reactHomePageTab) => {
-            return (
-              <Tab key={reactHomePageTab.value} label={reactHomePageTab.label} value={reactHomePageTab.value} />
-            );
+            return <Tab key={reactHomePageTab.value} label={reactHomePageTab.label} value={reactHomePageTab.value} />;
           })}
         </Tabs>
         <ReactThemeModeToggle />

@@ -51,10 +51,10 @@ export default function JsonPlaceholderTodosPanel() {
               )}
             </JsonPlaceholderTodos>
             <JsonPlaceholderTodosPagination
-                page={searchParameters.page}
-                isFetching={todosQuery.isFetching}
-                onPreviousPage={goToPreviousPage}
-                onNextPage={goToNextPage}
+              page={searchParameters.page}
+              isFetching={todosQuery.isFetching}
+              onPreviousPage={goToPreviousPage}
+              onNextPage={goToNextPage}
             />
           </JsonPlaceholderTodosSection>
 
@@ -104,7 +104,7 @@ const JsonPlaceholderTodosGrid = styled(Box)(({ theme }) => {
 const JsonPlaceholderTodosSection = styled(Box)(({ theme }) => {
   return {
     width: '100%',
-    alignItems:'center',
+    alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
@@ -114,7 +114,7 @@ const JsonPlaceholderTodosSection = styled(Box)(({ theme }) => {
   };
 });
 
-const JsonPlaceholderTodos = styled(Stack)(({ theme }) => {
+const JsonPlaceholderTodos = styled(Stack)(() => {
   return {
     width: '100%',
   };
