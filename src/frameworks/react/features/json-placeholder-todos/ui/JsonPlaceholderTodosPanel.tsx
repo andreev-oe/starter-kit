@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 
-import ReactThemeModeToggle from '../../../theme/ReactThemeModeToggle';
 import { useJsonPlaceholderTodosQuery } from '../api/useJsonPlaceholderTodosQuery';
 import type { JsonPlaceholderTodo } from '../model/json-placeholder-todo.types';
 import { useJsonPlaceholderTodosSearchParameters } from '../model/useJsonPlaceholderTodosSearchParameters';
@@ -31,19 +30,12 @@ export default function JsonPlaceholderTodosPanel() {
             <Typography variant={'h4'}>{JSON_PLACEHOLDER_TODOS_TEXTS.panelTitle}</Typography>
             <Typography variant={'body2'}>{JSON_PLACEHOLDER_TODOS_TEXTS.refreshHint}</Typography>
           </Stack>
-          <ReactThemeModeToggle />
         </JsonPlaceholderTodosHeader>
 
         <JsonPlaceholderTodosGrid>
           <JsonPlaceholderTodosSection>
-            <Stack spacing={2}>
+            <JsonPlaceholderTodos spacing={2}>
               <Typography variant={'h6'}>{JSON_PLACEHOLDER_TODOS_TEXTS.todosListTitle}</Typography>
-              <JsonPlaceholderTodosPagination
-                page={searchParameters.page}
-                isFetching={todosQuery.isFetching}
-                onPreviousPage={goToPreviousPage}
-                onNextPage={goToNextPage}
-              />
               {todosQuery.isPending && (
                 <Typography variant={'body2'}>{JSON_PLACEHOLDER_TODOS_TEXTS.loadingList}</Typography>
               )}
@@ -57,7 +49,13 @@ export default function JsonPlaceholderTodosPanel() {
                   onSelectTodo={selectTodo}
                 />
               )}
-            </Stack>
+            </JsonPlaceholderTodos>
+            <JsonPlaceholderTodosPagination
+                page={searchParameters.page}
+                isFetching={todosQuery.isFetching}
+                onPreviousPage={goToPreviousPage}
+                onNextPage={goToNextPage}
+            />
           </JsonPlaceholderTodosSection>
 
           <JsonPlaceholderTodosSection>
@@ -105,8 +103,19 @@ const JsonPlaceholderTodosGrid = styled(Box)(({ theme }) => {
 
 const JsonPlaceholderTodosSection = styled(Box)(({ theme }) => {
   return {
+    width: '100%',
+    alignItems:'center',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(2),
+  };
+});
+
+const JsonPlaceholderTodos = styled(Stack)(({ theme }) => {
+  return {
+    width: '100%',
   };
 });

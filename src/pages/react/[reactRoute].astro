@@ -1,0 +1,25 @@
+---
+import WelcomeReact from '../../frameworks/react/Welcome.tsx';
+import Layout from '../../layouts/Layout.astro';
+
+import { REACT_ROUTE_SEGMENTS } from '../../frameworks/react/app/router/react-router.consts';
+
+export function getStaticPaths() {
+  const reactStaticRouteSegments = [
+    REACT_ROUTE_SEGMENTS.welcome,
+    REACT_ROUTE_SEGMENTS.todo,
+  ] as const;
+
+  return reactStaticRouteSegments.map((reactRoute) => {
+    return {
+      params: {
+        reactRoute,
+      },
+    };
+  });
+}
+---
+
+<Layout>
+	<WelcomeReact client:only="react" />
+</Layout>
