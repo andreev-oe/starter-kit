@@ -36,7 +36,7 @@ export default function JsonPlaceholderTodoListItem({
             primary={todo.title}
             secondary={`${JSON_PLACEHOLDER_TODOS_TEXTS.userIdLabel}: ${todo.userId}`}
           />
-          <Chip label={statusLabel} color={statusColor} variant={'outlined'} />
+          <FixedWidthChip label={statusLabel} color={statusColor} variant={'outlined'} />
         </JsonPlaceholderTodoListItemContent>
       </ListItemButton>
     </ListItem>
@@ -46,5 +46,13 @@ export default function JsonPlaceholderTodoListItem({
 const JsonPlaceholderTodoListItemContent = styled(Stack)(() => {
   return {
     alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%'
+  };
+});
+
+const FixedWidthChip = styled(Chip)(() => {
+  return {
+    minWidth: '80px'
   };
 });

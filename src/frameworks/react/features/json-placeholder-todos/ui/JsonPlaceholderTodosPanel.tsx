@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 
+import ReactThemeModeToggle from '../../../theme/ReactThemeModeToggle';
 import { useJsonPlaceholderTodosQuery } from '../api/useJsonPlaceholderTodosQuery';
 import type { JsonPlaceholderTodo } from '../model/json-placeholder-todo.types';
 import { useJsonPlaceholderTodosSearchParameters } from '../model/useJsonPlaceholderTodosSearchParameters';
@@ -25,10 +26,13 @@ export default function JsonPlaceholderTodosPanel() {
   return (
     <JsonPlaceholderTodosRoot>
       <Stack spacing={3}>
-        <Stack spacing={0.5}>
-          <Typography variant={'h4'}>{JSON_PLACEHOLDER_TODOS_TEXTS.panelTitle}</Typography>
-          <Typography variant={'body2'}>{JSON_PLACEHOLDER_TODOS_TEXTS.refreshHint}</Typography>
-        </Stack>
+        <JsonPlaceholderTodosHeader>
+          <Stack spacing={0.5}>
+            <Typography variant={'h4'}>{JSON_PLACEHOLDER_TODOS_TEXTS.panelTitle}</Typography>
+            <Typography variant={'body2'}>{JSON_PLACEHOLDER_TODOS_TEXTS.refreshHint}</Typography>
+          </Stack>
+          <ReactThemeModeToggle />
+        </JsonPlaceholderTodosHeader>
 
         <JsonPlaceholderTodosGrid>
           <JsonPlaceholderTodosSection>
@@ -72,6 +76,18 @@ const JsonPlaceholderTodosRoot = styled(Box)(({ theme }) => {
   return {
     padding: theme.spacing(3),
     width: '100%',
+  };
+});
+
+const JsonPlaceholderTodosHeader = styled(Box)(({ theme }) => {
+  return {
+    alignItems: 'flex-start',
+    display: 'flex',
+    gap: theme.spacing(2),
+
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+    },
   };
 });
 
