@@ -3,17 +3,16 @@ import type { SyntheticEvent } from 'react';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { useLocation, useNavigate } from 'react-router';
 
 import JsonPlaceholderTodosPanel from '../../features/json-placeholder-todos/ui/JsonPlaceholderTodosPanel';
+import MvpChatPanel from '../../features/mvp-chat/ui/MvpChatPanel';
 import ReactThemeModeToggle from '../../theme/ReactThemeModeToggle';
 import { REACT_ROUTE_PATHS } from '../router/react-router.consts';
 
 const REACT_HOME_PAGE_TEXTS = {
   todoTab: 'Todo',
-  welcomeContent: 'welcome',
   welcomeTab: 'Welcome',
 } as const;
 
@@ -51,7 +50,7 @@ export default function ReactHomePage() {
 
       {activeRoutePath === REACT_ROUTE_PATHS.welcome && (
         <ReactHomeWelcomeContainer>
-          <Typography variant={'h4'}>{REACT_HOME_PAGE_TEXTS.welcomeContent}</Typography>
+          <MvpChatPanel />
         </ReactHomeWelcomeContainer>
       )}
       {activeRoutePath === REACT_ROUTE_PATHS.todo && <JsonPlaceholderTodosPanel />}
@@ -61,6 +60,10 @@ export default function ReactHomePage() {
 
 const ReactHomePageRoot = styled(Box)(() => {
   return {
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100dvh',
     paddingTop: '24px',
     width: '100%',
   };
@@ -85,6 +88,10 @@ const ReactHomeTabsContainer = styled(Box)(({ theme }) => {
 
 const ReactHomeWelcomeContainer = styled(Box)(({ theme }) => {
   return {
+    boxSizing: 'border-box',
+    display: 'flex',
+    flex: 1,
+    minHeight: 0,
     padding: theme.spacing(3),
   };
 });
