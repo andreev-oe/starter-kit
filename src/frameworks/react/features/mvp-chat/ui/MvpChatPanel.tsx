@@ -6,14 +6,15 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 
-import { MVP_CHAT_AUTHORS, MVP_CHAT_PAYLOAD_TYPES } from '../model/mvp-chat.consts';
+import { MVP_CHAT_AUTHORS } from '../model/mvp-chat.consts';
 import { mvpChatMessageFormSchema } from '../model/mvp-chat-message-form.schema';
 import type { MvpChatMessageFormInput, MvpChatMessageFormValues } from '../model/mvp-chat-message-form.schema';
-import type { MvpChatAuthor, MvpChatMessage } from '../model/mvp-chat.types';
+import { useMvpChatStore } from '../model/mvp-chat.store';
+import type { MvpChatAuthor } from '../model/mvp-chat.types';
 
 const EMPTY_MESSAGE_TEXT = '';
 
@@ -32,35 +33,19 @@ const MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES: MvpChatMessageFormInput = {
   text: EMPTY_MESSAGE_TEXT,
 };
 
-const INITIAL_MVP_CHAT_MESSAGES: MvpChatMessage[] = [
-  {
-    author: MVP_CHAT_AUTHORS.companion,
-    payload: {
-      text: 'Привет. Чем могу помочь?',
-      type: MVP_CHAT_PAYLOAD_TYPES.text,
-    },
-    timestamp: '2026-07-07T10:20:18.235Z',
-  },
-  {
-    author: MVP_CHAT_AUTHORS.user,
-    payload: {
-      text: 'Нужно быстро собрать MVP чата.',
-      type: MVP_CHAT_PAYLOAD_TYPES.text,
-    },
-    timestamp: '2026-07-07T10:22:18.235Z',
-  },
-  {
-    author: MVP_CHAT_AUTHORS.companion,
-    payload: {
-      text: 'Готово, оставим простую структуру с полем ввода.',
-      type: MVP_CHAT_PAYLOAD_TYPES.text,
-    },
-    timestamp: '2026-07-07T10:25:18.235Z',
-  },
-];
-
 export default function MvpChatPanel() {
-  const [messages, setMessages] = useState<MvpChatMessage[]>(INITIAL_MVP_CHAT_MESSAGES);
+  const initializeMessages = useMvpChatStore((state) => {
+    return state.initializeMessages;
+  });
+  const isMessageSending = useMvpChatStore((state) => {
+    return state.isMessageSending;
+  });
+  const messages = useMvpChatStore((state) => {
+    return state.messages;
+  });
+  const sendMessage = useMvpChatStore((state) => {
+    return state.sendMessage;
+  });
   const { control, formState, handleSubmit, reset } = useForm<
     MvpChatMessageFormInput,
     unknown,
@@ -70,21 +55,14 @@ export default function MvpChatPanel() {
     mode: 'onChange',
     resolver: zodResolver(mvpChatMessageFormSchema),
   });
-  const isSubmitDisabled = !formState.isValid;
+  const isSubmitDisabled = !formState.isValid || isMessageSending;
 
-  const submitMessage: SubmitHandler<MvpChatMessageFormValues> = (formValues) => {
-    const nextMessage: MvpChatMessage = {
-      author: MVP_CHAT_AUTHORS.user,
-      payload: {
-        text: formValues.text.trim(),
-        type: MVP_CHAT_PAYLOAD_TYPES.text,
-      },
-      timestamp: new Date().toISOString(),
-    };
+  useEffect(() => {
+    initializeMessages();
+  }, [initializeMessages]);
 
-    setMessages((currentMessages) => {
-      return [...currentMessages, nextMessage];
-    });
+  const submitMessage: SubmitHandler<MvpChatMessageFormValues> = async (formValues) => {
+    await sendMessage(formValues.text.trim());
     reset(MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES);
   };
 
@@ -172,6 +150,7 @@ const MvpChatMessagesArea = styled(Box)(({ theme }) => {
 
 const MvpChatMessagesStack = styled(Stack)(() => {
   return {
+    justifyContent: 'flex-end',
     minHeight: '100%',
   };
 });
