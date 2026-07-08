@@ -1,5 +1,4 @@
-import type { FormEvent } from 'react';
-
+import { zodResolver } from '@hookform/resolvers/zod';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -7,10 +6,19 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 
-const MVP_CHAT_AUTHORS = {
-  companion: 'companion',
-  user: 'user',
+import { MVP_CHAT_AUTHORS, MVP_CHAT_PAYLOAD_TYPES } from '../model/mvp-chat.consts';
+import { mvpChatMessageFormSchema } from '../model/mvp-chat-message-form.schema';
+import type { MvpChatMessageFormInput, MvpChatMessageFormValues } from '../model/mvp-chat-message-form.schema';
+import type { MvpChatAuthor, MvpChatMessage } from '../model/mvp-chat.types';
+
+const EMPTY_MESSAGE_TEXT = '';
+
+const MVP_CHAT_MESSAGE_FIELD_NAMES = {
+  text: 'text',
 } as const;
 
 const MVP_CHAT_TEXTS = {
@@ -20,30 +28,65 @@ const MVP_CHAT_TEXTS = {
   title: 'Чат',
 } as const;
 
-const MVP_CHAT_MESSAGES = [
+const MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES: MvpChatMessageFormInput = {
+  text: EMPTY_MESSAGE_TEXT,
+};
+
+const INITIAL_MVP_CHAT_MESSAGES: MvpChatMessage[] = [
   {
     author: MVP_CHAT_AUTHORS.companion,
-    id: 'welcome-message',
-    text: 'Привет. Чем могу помочь?',
+    payload: {
+      text: 'Привет. Чем могу помочь?',
+      type: MVP_CHAT_PAYLOAD_TYPES.text,
+    },
+    timestamp: '2026-07-07T10:20:18.235Z',
   },
   {
     author: MVP_CHAT_AUTHORS.user,
-    id: 'user-message',
-    text: 'Нужно быстро собрать MVP чата.',
+    payload: {
+      text: 'Нужно быстро собрать MVP чата.',
+      type: MVP_CHAT_PAYLOAD_TYPES.text,
+    },
+    timestamp: '2026-07-07T10:22:18.235Z',
   },
   {
     author: MVP_CHAT_AUTHORS.companion,
-    id: 'companion-message',
-    text: 'Готово, оставим простую структуру с полем ввода.',
+    payload: {
+      text: 'Готово, оставим простую структуру с полем ввода.',
+      type: MVP_CHAT_PAYLOAD_TYPES.text,
+    },
+    timestamp: '2026-07-07T10:25:18.235Z',
   },
-] as const;
-
-type MvpChatAuthor = (typeof MVP_CHAT_AUTHORS)[keyof typeof MVP_CHAT_AUTHORS];
+];
 
 export default function MvpChatPanel() {
-  function handleChatFormSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-  }
+  const [messages, setMessages] = useState<MvpChatMessage[]>(INITIAL_MVP_CHAT_MESSAGES);
+  const { control, formState, handleSubmit, reset } = useForm<
+    MvpChatMessageFormInput,
+    unknown,
+    MvpChatMessageFormValues
+  >({
+    defaultValues: MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES,
+    mode: 'onChange',
+    resolver: zodResolver(mvpChatMessageFormSchema),
+  });
+  const isSubmitDisabled = !formState.isValid;
+
+  const submitMessage: SubmitHandler<MvpChatMessageFormValues> = (formValues) => {
+    const nextMessage: MvpChatMessage = {
+      author: MVP_CHAT_AUTHORS.user,
+      payload: {
+        text: formValues.text.trim(),
+        type: MVP_CHAT_PAYLOAD_TYPES.text,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages((currentMessages) => {
+      return [...currentMessages, nextMessage];
+    });
+    reset(MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES);
+  };
 
   return (
     <MvpChatRoot>
@@ -53,11 +96,11 @@ export default function MvpChatPanel() {
 
       <MvpChatMessagesArea>
         <MvpChatMessagesStack spacing={1.5}>
-          {MVP_CHAT_MESSAGES.map((message) => {
+          {messages.map((message) => {
             return (
-              <MvpChatMessageRow key={message.id} $messageAuthor={message.author}>
+              <MvpChatMessageRow key={`${message.timestamp}-${message.author}`} $messageAuthor={message.author}>
                 <MvpChatMessageBubble elevation={0} $messageAuthor={message.author}>
-                  <Typography variant={'body1'}>{message.text}</Typography>
+                  <Typography variant={'body1'}>{message.payload.text}</Typography>
                 </MvpChatMessageBubble>
               </MvpChatMessageRow>
             );
@@ -65,14 +108,29 @@ export default function MvpChatPanel() {
         </MvpChatMessagesStack>
       </MvpChatMessagesArea>
 
-      <MvpChatForm component={'form'} onSubmit={handleChatFormSubmit}>
-        <MvpChatMessageInput
-          fullWidth={true}
-          label={MVP_CHAT_TEXTS.inputLabel}
-          placeholder={MVP_CHAT_TEXTS.messageInputPlaceholder}
-          size={'small'}
+      <MvpChatForm onSubmit={handleSubmit(submitMessage)}>
+        <Controller
+          control={control}
+          name={MVP_CHAT_MESSAGE_FIELD_NAMES.text}
+          render={({ field, fieldState }) => {
+            return (
+              <MvpChatMessageInput
+                error={Boolean(fieldState.error)}
+                fullWidth={true}
+                helperText={fieldState.error?.message ?? ' '}
+                inputRef={field.ref}
+                label={MVP_CHAT_TEXTS.inputLabel}
+                name={field.name}
+                placeholder={MVP_CHAT_TEXTS.messageInputPlaceholder}
+                size={'small'}
+                value={field.value}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+              />
+            );
+          }}
         />
-        <Button type={'submit'} variant={'contained'}>
+        <Button type={'submit'} variant={'contained'} disabled={isSubmitDisabled}>
           {MVP_CHAT_TEXTS.sendButton}
         </Button>
       </MvpChatForm>
@@ -146,7 +204,7 @@ const MvpChatMessageBubble = styled(Paper, {
   };
 });
 
-const MvpChatForm = styled(Box)(({ theme }) => {
+const MvpChatForm = styled('form')(({ theme }) => {
   return {
     alignItems: 'center',
     borderTop: `1px solid ${theme.palette.divider}`,
