@@ -10,7 +10,7 @@ export type MvpChatTextPayload = {
 };
 
 export type MvpChatAudioPayload = {
-  audioUrl: string;
+  base64Audio: string;
   mimeType: string;
   sizeBytes: number;
   type: typeof MVP_CHAT_PAYLOAD_TYPES.audio;
@@ -18,6 +18,23 @@ export type MvpChatAudioPayload = {
 
 export type MvpChatMessage = {
   author: MvpChatAuthor;
+  id: string;
   payload: MvpChatTextPayload | MvpChatAudioPayload;
   timestamp: string;
+};
+
+export type SendMvpChatTextMessageVariables = {
+  text: string;
+};
+
+export type SendMvpChatAudioMessageVariables = {
+  audioBlob: Blob;
+  mimeType: string;
+  sizeBytes: number;
+};
+
+export type SendMvpChatAudioMessageRequestBody = {
+  base64Audio: string;
+  mimeType: string;
+  sizeBytes: number;
 };

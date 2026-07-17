@@ -13,6 +13,21 @@ function getJsonPlaceholderTodosRouteWithoutParameters() {
   return `${API_BASE_URLS.jsonPlaceholder}${ROUTE_SEPARATOR}${API_ROUTE_SEGMENTS.todos}`;
 }
 
+/** Возвращает route для сообщений MVP-чата. */
+function getMvpChatMessagesRoute() {
+  return `${API_BASE_URLS.local}${ROUTE_SEPARATOR}${API_ROUTE_SEGMENTS.api}${ROUTE_SEPARATOR}${API_ROUTE_SEGMENTS.mvpChat}${ROUTE_SEPARATOR}${API_ROUTE_SEGMENTS.messages}`;
+}
+
+/** Возвращает route для отправки текстового сообщения MVP-чата. */
+function getMvpChatTextMessageRoute() {
+  return `${getMvpChatMessagesRoute()}${ROUTE_SEPARATOR}${API_ROUTE_SEGMENTS.text}`;
+}
+
+/** Возвращает route для отправки аудио сообщения MVP-чата. */
+function getMvpChatAudioMessageRoute() {
+  return `${getMvpChatMessagesRoute()}${ROUTE_SEPARATOR}${API_ROUTE_SEGMENTS.audio}`;
+}
+
 /** Возвращает route для списка JSONPlaceholder todo с query parameters. */
 function getJsonPlaceholderTodosRoute(parameters: TodoListRouteParameters) {
   const queryString = stringifyQueryParameters({
@@ -33,5 +48,10 @@ export const apiRoutes = {
     todo: getJsonPlaceholderTodoRoute,
     todos: getJsonPlaceholderTodosRoute,
     todosWithoutParameters: getJsonPlaceholderTodosRouteWithoutParameters,
+  },
+  mvpChat: {
+    audioMessage: getMvpChatAudioMessageRoute,
+    messages: getMvpChatMessagesRoute,
+    textMessage: getMvpChatTextMessageRoute,
   },
 } as const;

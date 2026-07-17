@@ -1,0 +1,38 @@
+[
+  {
+    "author": "user2",
+    "id": "initial-companion-greeting",
+    "payload": {
+      "text": "Привет. Чем могу помочь?",
+      "type": "text"
+    },
+    "timestamp": "2026-07-07T10:20:18.235Z"
+  },
+  {
+    "author": "user1",
+    "id": "initial-user-request",
+    "payload": {
+      "text": "Нужно быстро собрать MVP чата.",
+      "type": "text"
+    },
+    "timestamp": "2026-07-07T10:22:18.235Z"
+  },
+  {
+    "author": "user2",
+    "id": "initial-companion-answer",
+    "payload": {
+      "text": "Готово, оставим простую структуру с полем ввода.",
+      "type": "text"
+    },
+    "timestamp": "2026-07-07T10:25:18.235Z"
+  },
+  {
+    "author": "user1",
+    "id": "f48fad51-4d6b-4d55-a452-2da7c2ad842c",
+    "payload": {
+      "text": "квапп",
+      "type": "text"
+    },
+    "timestamp": "2026-07-08T14:24:53.024Z"
+  }
+]

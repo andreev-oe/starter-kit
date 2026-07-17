@@ -6,28 +6,36 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import { useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 
+import { useMvpChatMessagesQuery } from '../api/useMvpChatMessagesQuery';
+import { useSendMvpChatAudioMessageMutation } from '../api/useSendMvpChatAudioMessageMutation';
+import { useSendMvpChatTextMessageMutation } from '../api/useSendMvpChatTextMessageMutation';
 import { MVP_CHAT_AUTHORS, MVP_CHAT_PAYLOAD_TYPES, MVP_CHAT_RECORDING_STATUSES } from '../model/mvp-chat.consts';
+import { getMvpChatAudioDataUrl } from '../model/mvp-chat-audio.utils';
 import { mvpChatMessageFormSchema } from '../model/mvp-chat-message-form.schema';
 import type { MvpChatMessageFormInput, MvpChatMessageFormValues } from '../model/mvp-chat-message-form.schema';
-import { useMvpChatStore } from '../model/mvp-chat.store';
-import type { MvpChatAuthor } from '../model/mvp-chat.types';
+import { useMvpChatAudioRecorder } from '../model/useMvpChatAudioRecorder';
+import type { MvpChatAuthor, MvpChatMessage } from '../model/mvp-chat.types';
 
 const EMPTY_MESSAGE_TEXT = '';
+const EMPTY_MESSAGES: MvpChatMessage[] = [];
+const EMPTY_TEXT_LENGTH = 0;
 
 const MVP_CHAT_MESSAGE_FIELD_NAMES = {
   text: 'text',
 } as const;
 
 const MVP_CHAT_TEXTS = {
+  loadingMessages: 'Загрузка сообщений',
+  messagesLoadingError: 'Не удалось загрузить сообщения',
   inputLabel: 'Сообщение',
   messageInputPlaceholder: 'Введите сообщение',
   pendingAudioLabel: 'Голосовое сообщение готово',
   recordButton: 'Записать',
   replaceAudioButton: 'Перезаписать',
+  sendMessageError: 'Не удалось отправить сообщение',
   sendButton: 'Отправить',
   stopRecordButton: 'Остановить',
   title: 'Чат',
@@ -38,33 +46,20 @@ const MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES: MvpChatMessageFormInput = {
 };
 
 export default function MvpChatPanel() {
-  const initializeMessages = useMvpChatStore((state) => {
-    return state.initializeMessages;
-  });
-  const isMessageSending = useMvpChatStore((state) => {
-    return state.isMessageSending;
-  });
-  const messages = useMvpChatStore((state) => {
-    return state.messages;
-  });
-  const pendingAudioUrl = useMvpChatStore((state) => {
-    return state.pendingAudioUrl;
-  });
-  const recordingStatus = useMvpChatStore((state) => {
-    return state.recordingStatus;
-  });
-  const audioRecordingErrorMessage = useMvpChatStore((state) => {
-    return state.audioRecordingErrorMessage;
-  });
-  const sendMessage = useMvpChatStore((state) => {
-    return state.sendMessage;
-  });
-  const startAudioRecording = useMvpChatStore((state) => {
-    return state.startAudioRecording;
-  });
-  const stopAudioRecording = useMvpChatStore((state) => {
-    return state.stopAudioRecording;
-  });
+  const mvpChatMessagesQuery = useMvpChatMessagesQuery();
+  const sendTextMessageMutation = useSendMvpChatTextMessageMutation();
+  const sendAudioMessageMutation = useSendMvpChatAudioMessageMutation();
+  const {
+    audioRecordingErrorMessage,
+    clearPendingAudio,
+    pendingAudioBlob,
+    pendingAudioMimeType,
+    pendingAudioSizeBytes,
+    pendingAudioUrl,
+    recordingStatus,
+    startAudioRecording,
+    stopAudioRecording,
+  } = useMvpChatAudioRecorder();
   const { control, handleSubmit, reset } = useForm<MvpChatMessageFormInput, unknown, MvpChatMessageFormValues>({
     defaultValues: MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES,
     mode: 'onChange',
@@ -74,7 +69,9 @@ export default function MvpChatPanel() {
     control,
     name: MVP_CHAT_MESSAGE_FIELD_NAMES.text,
   });
-  const hasMessageText = messageText.trim().length > 0;
+  const messages = mvpChatMessagesQuery.data ?? EMPTY_MESSAGES;
+  const isMessageSending = sendTextMessageMutation.isPending || sendAudioMessageMutation.isPending;
+  const hasMessageText = messageText.trim().length > EMPTY_TEXT_LENGTH;
   const hasPendingAudio = pendingAudioUrl !== null;
   const isRecording = recordingStatus === MVP_CHAT_RECORDING_STATUSES.recording;
   const isMicrophoneRequesting = recordingStatus === MVP_CHAT_RECORDING_STATUSES.requesting;
@@ -85,18 +82,38 @@ export default function MvpChatPanel() {
     : hasPendingAudio
       ? MVP_CHAT_TEXTS.replaceAudioButton
       : MVP_CHAT_TEXTS.recordButton;
-
-  useEffect(() => {
-    initializeMessages();
-  }, [initializeMessages]);
+  const messageErrorText = mvpChatMessagesQuery.isError
+    ? MVP_CHAT_TEXTS.messagesLoadingError
+    : sendTextMessageMutation.isError || sendAudioMessageMutation.isError
+      ? MVP_CHAT_TEXTS.sendMessageError
+      : null;
 
   const submitMessage: SubmitHandler<MvpChatMessageFormValues> = async (formValues) => {
     if (isSubmitDisabled) {
       return;
     }
 
-    await sendMessage(formValues.text.trim());
-    reset(MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES);
+    const trimmedMessageText = formValues.text.trim();
+
+    try {
+      if (trimmedMessageText.length > EMPTY_TEXT_LENGTH) {
+        await sendTextMessageMutation.mutateAsync({
+          text: trimmedMessageText,
+        });
+        reset(MVP_CHAT_MESSAGE_FORM_DEFAULT_VALUES);
+      }
+
+      if (pendingAudioBlob !== null && pendingAudioMimeType !== null && pendingAudioSizeBytes !== null) {
+        await sendAudioMessageMutation.mutateAsync({
+          audioBlob: pendingAudioBlob,
+          mimeType: pendingAudioMimeType,
+          sizeBytes: pendingAudioSizeBytes,
+        });
+        clearPendingAudio();
+      }
+    } catch {
+      return;
+    }
   };
 
   const handleAudioRecordingToggle = async () => {
@@ -117,15 +134,22 @@ export default function MvpChatPanel() {
 
       <MvpChatMessagesArea>
         <MvpChatMessagesStack spacing={1.5}>
+          {mvpChatMessagesQuery.isLoading && (
+            <MvpChatMessageRow $messageAuthor={MVP_CHAT_AUTHORS.companion}>
+              <MvpChatMessageBubble elevation={0} $messageAuthor={MVP_CHAT_AUTHORS.companion}>
+                <Typography variant={'body1'}>{MVP_CHAT_TEXTS.loadingMessages}</Typography>
+              </MvpChatMessageBubble>
+            </MvpChatMessageRow>
+          )}
           {messages.map((message) => {
             return (
-              <MvpChatMessageRow key={`${message.timestamp}-${message.author}`} $messageAuthor={message.author}>
+              <MvpChatMessageRow key={message.id} $messageAuthor={message.author}>
                 <MvpChatMessageBubble elevation={0} $messageAuthor={message.author}>
                   {message.payload.type === MVP_CHAT_PAYLOAD_TYPES.text && (
                     <Typography variant={'body1'}>{message.payload.text}</Typography>
                   )}
                   {message.payload.type === MVP_CHAT_PAYLOAD_TYPES.audio && (
-                    <MvpChatAudio controls={true} preload={'metadata'} src={message.payload.audioUrl} />
+                    <MvpChatAudio controls={true} preload={'metadata'} src={getMvpChatAudioDataUrl(message.payload)} />
                   )}
                 </MvpChatMessageBubble>
               </MvpChatMessageRow>
@@ -146,6 +170,11 @@ export default function MvpChatPanel() {
             {audioRecordingErrorMessage}
           </Typography>
         )}
+        {messageErrorText !== null && (
+          <Typography color={'error'} variant={'body2'}>
+            {messageErrorText}
+          </Typography>
+        )}
         <MvpChatComposerRow>
           <Controller
             control={control}
@@ -155,7 +184,6 @@ export default function MvpChatPanel() {
                 <MvpChatMessageInput
                   error={Boolean(fieldState.error)}
                   fullWidth={true}
-                  helperText={fieldState.error?.message ?? ' '}
                   inputRef={field.ref}
                   label={MVP_CHAT_TEXTS.inputLabel}
                   name={field.name}

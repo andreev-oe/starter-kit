@@ -4,6 +4,7 @@ import type { MvpChatMessage } from './mvp-chat.types';
 export const INITIAL_MVP_CHAT_MESSAGES: MvpChatMessage[] = [
   {
     author: MVP_CHAT_AUTHORS.companion,
+    id: 'initial-companion-greeting',
     payload: {
       text: 'Привет. Чем могу помочь?',
       type: MVP_CHAT_PAYLOAD_TYPES.text,
@@ -12,6 +13,7 @@ export const INITIAL_MVP_CHAT_MESSAGES: MvpChatMessage[] = [
   },
   {
     author: MVP_CHAT_AUTHORS.user,
+    id: 'initial-user-request',
     payload: {
       text: 'Нужно быстро собрать MVP чата.',
       type: MVP_CHAT_PAYLOAD_TYPES.text,
@@ -20,6 +22,7 @@ export const INITIAL_MVP_CHAT_MESSAGES: MvpChatMessage[] = [
   },
   {
     author: MVP_CHAT_AUTHORS.companion,
+    id: 'initial-companion-answer',
     payload: {
       text: 'Готово, оставим простую структуру с полем ввода.',
       type: MVP_CHAT_PAYLOAD_TYPES.text,

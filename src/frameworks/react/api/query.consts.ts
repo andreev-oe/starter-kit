@@ -6,6 +6,7 @@ const DEFAULT_QUERY_RETRY_COUNT = 1;
 
 export const QUERY_KEY_ROOTS = {
   api: 'api',
+  mvpChat: 'mvp-chat',
   todos: 'todos',
 } as const;
 
@@ -13,6 +14,7 @@ export const QUERY_KEY_SCOPES = {
   all: 'all',
   detail: 'detail',
   list: 'list',
+  messages: 'messages',
   root: 'root',
 } as const;
 

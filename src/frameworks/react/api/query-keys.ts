@@ -15,6 +15,11 @@ function getTodosAllQueryKey() {
   return [QUERY_KEY_ROOTS.todos, QUERY_KEY_SCOPES.all] as const;
 }
 
+/** Возвращает query key для сообщений MVP-чата. */
+function getMvpChatMessagesQueryKey() {
+  return [QUERY_KEY_ROOTS.mvpChat, QUERY_KEY_SCOPES.messages] as const;
+}
+
 /** Возвращает query key для всех списков todo. */
 function getTodosListsQueryKey() {
   return [QUERY_KEY_ROOTS.todos, QUERY_KEY_SCOPES.list] as const;
@@ -33,6 +38,9 @@ function getTodoDetailQueryKey(todoId: number) {
 export const queryKeys = {
   api: {
     root: getApiRootQueryKey,
+  },
+  mvpChat: {
+    messages: getMvpChatMessagesQueryKey,
   },
   todos: {
     all: getTodosAllQueryKey,

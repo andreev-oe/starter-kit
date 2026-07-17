@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.7",
+    "@astrojs/node": "^9.5.5",
     "@astrojs/react": "^4.4.0",
     "@astrojs/svelte": "^7.2.0",
     "@astrojs/vue": "^5.1.1",
@@ -43,6 +44,7 @@
     "@eslint/js": "^9.39.4",
     "@tanstack/eslint-plugin-query": "^5.101.2",
     "@types/markdown-it": "^14.1.2",
+    "@types/node": "^26.1.1",
     "@types/qs": "^6.15.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",

@@ -1,23 +1,27 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig } from 'astro/config';
 
-import vue from "@astrojs/vue";
-import svelte from "@astrojs/svelte";
-import react from "@astrojs/react";
-import mdx from "@astrojs/mdx";
+import vue from '@astrojs/vue';
+import svelte from '@astrojs/svelte';
+import react from '@astrojs/react';
+import mdx from '@astrojs/mdx';
+import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
+  adapter: node({
+    mode: 'standalone',
+  }),
   markdown: {
     shikiConfig: {
       themes: {
-        light: "github-light",
-        dark: "github-dark",
+        light: 'github-light',
+        dark: 'github-dark',
       },
     },
   },
   redirects: {
-    "/": "/readme/",
+    '/': '/readme/',
   },
   integrations: [
     mdx(),

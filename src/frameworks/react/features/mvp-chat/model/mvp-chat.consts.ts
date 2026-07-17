@@ -26,3 +26,22 @@ export const MVP_CHAT_AUDIO_MIME_TYPE_OPTIONS = [
   MVP_CHAT_AUDIO_MIME_TYPES.webm,
   MVP_CHAT_AUDIO_MIME_TYPES.mp4,
 ] as const;
+
+export const MVP_CHAT_MESSAGE_FIELD_NAMES = {
+  author: 'author',
+  id: 'id',
+  payload: 'payload',
+  timestamp: 'timestamp',
+} as const;
+
+export const MVP_CHAT_TEXT_PAYLOAD_FIELD_NAMES = {
+  text: 'text',
+  type: 'type',
+} as const;
+
+export const MVP_CHAT_AUDIO_PAYLOAD_FIELD_NAMES = {
+  base64Audio: 'base64Audio',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  type: 'type',
+} as const;
